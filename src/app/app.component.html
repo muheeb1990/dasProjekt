@@ -1,1 +1,25 @@
+<h3>Bundesland suchen</h3>
+<input
+  type="text"
+  placeholder="Bundesland suchen..."
+  (keyup.enter)="searchState(stateSearch.value)"
+  #stateSearch
+/>
+
+<h3>Automat suchen</h3>
+<input
+  type="text"
+  placeholder="Automat suchen..."
+  (input)="searchAutomat(automatSearch.value)"
+  #automatSearch
+/>
+
+
+@if (noAutomatFound) {
+  <p style="color: red; font-weight: bold;">
+    Kein Automat gefunden!
+  </p>
+}
+
+
 <div id="map"></div>

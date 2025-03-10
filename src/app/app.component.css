@@ -1,4 +1,27 @@
 #map {
-    height: 100vh;
+    height: 100vh; /* 100% der Höhe des Viewports */
+    width: 100vw;  /* 100% der Breite des Viewports */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+  
+
+input[type="text"] {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    width: 250px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+  
+input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
 }
   
