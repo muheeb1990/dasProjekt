@@ -1,27 +1,88 @@
-#map {
-    height: 100vh; /* 100% der Höhe des Viewports */
-    width: 100vw;  /* 100% der Breite des Viewports */
-    position: absolute;
-    top: 0;
-    left: 0;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
-  
 
-input[type="text"] {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
+#map {
+    height: 90vh;
+    width: 100%;
+    background-color: #696868;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
     padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    background-color: black;
+}
+
+.controls input,
+.controls select {
+    padding: 10px;
     font-size: 16px;
-    width: 250px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
-  
-input[type="text"]:focus {
-    outline: none;
-    border-color: #007bff;
+
+.controls select {
+    background-color: #f8f8f8;
+    color: #333;
 }
-  
+
+.no-result {
+    text-align: center;
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.leaflet-popup-content {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+}
+
+.popup-content {
+    max-width: 250px;
+}
+
+.popup-content h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 18px;
+    color: #007bff; /* Blau für Titel */
+}
+
+.popup-content .subname {
+    margin-top: -5px;
+    font-style: italic;
+    color: #666;
+}
+
+.popup-content p {
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+.popup-content strong {
+    color: #333;
+}
+
+.popup-content a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.popup-content a:hover {
+    text-decoration: underline;
+}
+
+.popup-content .updated {
+    font-size: 12px;
+    color: #999;
+    margin-top: 10px;
+}

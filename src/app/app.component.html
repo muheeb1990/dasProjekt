@@ -1,25 +1,26 @@
-<h3>Bundesland suchen</h3>
-<input
-  type="text"
-  placeholder="Bundesland suchen..."
-  (keyup.enter)="searchState(stateSearch.value)"
-  #stateSearch
-/>
+<div class="controls">
 
-<h3>Automat suchen</h3>
-<input
-  type="text"
-  placeholder="Automat suchen..."
-  (input)="searchAutomat(automatSearch.value)"
-  #automatSearch
-/>
+  <!-- Suche nach Stadt oder PLZ -->
+  <input
+    type="text"
+    placeholder="Stadt oder Postleitzahl suchen..."
+    (keyup.enter)="searchCityZip(cityZipInput.value)"
+    #cityZipInput
+  />
 
+  <!-- Dropdown mit Name, Stadt, PLZ, Maschinen -->
+  <select (change)="searchAutomat(automatSelect.value)" #automatSelect>
+    <option value="">Alle Automaten anzeigen</option>
 
-@if (noAutomatFound) {
-  <p style="color: red; font-weight: bold;">
-    Kein Automat gefunden!
-  </p>
-}
+    <option *ngFor="let automat of automatNames" [value]="automat.name">
+      {{ automat.name }} - {{ automat.city }} (PLZ: {{ automat.zipcode }}, Maschinen: {{ automat.machines }})
+    </option>
+  </select>
 
+</div>
+
+<p *ngIf="noAutomatFound" class="no-result">
+  Keine Automaten gefunden!
+</p>
 
 <div id="map"></div>

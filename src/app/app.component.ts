@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
-import { LatLngTuple } from 'leaflet'; // Wichtig für Typisierung
+import { CommonModule } from '@angular/common';
 
-// Leaflet-Icon-Pfade setzen
+// 🟦 Leaflet Icons fixen
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -16,12 +16,20 @@ L.Icon.Default.mergeOptions({
   standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: []
+  imports: [CommonModule]
 })
 export class AppComponent implements OnInit {
-  geoJsonLayer: L.GeoJSON<any> | null = null;
+
   map: L.Map | null = null;
+  geoJsonLayer: L.GeoJSON<any> | null = null;
   automatMarkers: L.Marker[] = [];
+  automatNames: {
+    name: string;
+    city: string;
+    zipcode: string;
+    machines: number;
+  }[] = [];
+
   noAutomatFound: boolean = false;
 
   ngOnInit(): void {
@@ -30,200 +38,209 @@ export class AppComponent implements OnInit {
 
   private initMap(): void {
     this.map = L.map('map', {
-      maxBounds: [
-        [55.1, 5.5], // Norden, Westen
-        [47.2, 15.5] // Süden, Osten
-      ],
-      maxBoundsViscosity: 1.0,
+      zoomControl: true,
       minZoom: 6,
-      maxZoom: 10
-    }).setView([51.1657, 10.4515], 6);
-
-    this.map.fitBounds([
-      [55.1, 5.5],
-      [47.2, 15.5]
-    ]);
-
-    // === Maske hinzufügen: Alles außerhalb von Deutschland abdecken ===
-    const outerRing: LatLngTuple[] = [
-      [-90, -180],
-      [-90, 180],
-      [90, 180],
-      [90, -180],
-      [-90, -180]
-    ];
-
-    const germanyCutout: LatLngTuple[] = [
-      [55.1, 5.5],
-      [55.1, 15.5],
-      [47.2, 15.5],
-      [47.2, 5.5],
-      [55.1, 5.5]
-    ];
-
-    const mask = L.polygon([
-      outerRing,
-      germanyCutout
-    ] as LatLngTuple[][], {
-      color: 'black',
-      fillColor: 'black',
-      fillOpacity: 0.7,
-      stroke: false
-    }).addTo(this.map!);
-
-    // === Lade die Bundesländer-GeoJSON ===
+      maxZoom: 10,
+      attributionControl: false,
+      maxBounds: [
+        [55.5, 5],     // Norden / Westen (etwas enger)
+        [47, 16]       // Süden / Osten
+      ],
+      maxBoundsViscosity: 1.0
+    }).setView([51.1657, 10.4515], 8);  // 10% kleiner, Standard Zoom 8
+    
+    this.loadGeoJson();   // Bundesländer laden
+    this.loadAutomaten(); // Automaten laden
+  }
+  
+  private loadGeoJson(): void {
     fetch('assets/bundeslaender.geojson')
       .then(response => response.json())
       .then(geojsonData => {
         this.geoJsonLayer = L.geoJSON(geojsonData, {
+          style: {
+            color: 'white',
+            weight: 2,
+            fillColor: 'black',
+            fillOpacity: 1
+          },
           onEachFeature: (feature, layer) => {
-            const nameProperty = feature.properties.name;
-
-            if (!nameProperty) {
-              console.warn('Kein name-Feld gefunden bei:', feature);
-              return;
-            }
-
-            layer.bindPopup(`<b>${nameProperty}</b>`);
-
             layer.on({
+              mouseover: (e) => {
+                const target = e.target;
+                target.setStyle({
+                  fillColor: 'white',
+                  color: 'black',
+                  weight: 2,
+                  fillOpacity: 1
+                });
+              },
+              mouseout: (e) => {
+                const target = e.target;
+                target.setStyle({
+                  fillColor: 'black',
+                  color: 'white',
+                  weight: 2,
+                  fillOpacity: 1
+                });
+              },
               click: () => {
                 layer.openPopup();
               }
             });
-          },
-          style: {
-            color: 'blue',
-            weight: 2,
-            fillOpacity: 0.1
+            layer.bindPopup(`<b>${feature.properties.name}</b>`);
           }
         }).addTo(this.map!);
+  
+        // ✅ Hier das neue Padding (kleiner als vorher)
+        this.map!.fitBounds(this.geoJsonLayer.getBounds(), {
+          padding: [70, 70]
+        });
       });
+  }
+  
 
-    // === Lade die Verkaufsautomaten ===
+  private loadAutomaten(): void {
     fetch('assets/automaten.json')
       .then(response => response.json())
       .then(automaten => {
         automaten.forEach((automat: any) => {
-          if (!automat.lat || !automat.lon) {
-            console.warn('Automat ohne Koordinaten gefunden:', automat);
+
+          const lat = parseFloat(automat.lat);
+          const lon = parseFloat(automat.lon);
+
+          if (!lat || !lon) {
+            console.warn('Automat ohne gültige Koordinaten:', automat);
             return;
           }
 
-          const marker = L.marker([automat.lat, automat.lon]).addTo(this.map!);
+          const marker = L.marker([lat, lon]);
+
+          marker.bindTooltip(automat.name, {
+            permanent: false,
+            direction: 'top',
+            opacity: 0.9
+          });
 
           marker.bindPopup(`
-            <b>${automat.name}</b><br>
-            ${automat.beschreibung || 'Keine Beschreibung verfügbar.'}
+            <div class="popup-content">
+              <h3>${automat.name}</h3>
+              ${automat.nameSub ? `<p class="subname">${automat.nameSub}</p>` : ''}
+              <p><strong>Adresse:</strong><br>
+                ${automat.address}<br>
+                ${automat.zipcode} ${automat.city} (${automat.country})
+              </p>
+              <p><strong>Maschinen:</strong> ${automat.machines}</p>
+              <p><strong>Kontakt:</strong><br>
+                📞 <a href="tel:${automat.phone}">${automat.phone}</a><br>
+                ✉️ <a href="mailto:${automat.email}">${automat.email}</a>
+              </p>
+              <p><strong>Öffnungszeiten:</strong><br>
+                Von: ${automat.working_from} Uhr bis ${automat.working_till} Uhr<br>
+                Wochenende: ${automat.on_weekends}
+              </p>
+              <p class="updated">Letzte Aktualisierung:<br> ${automat.date}</p>
+            </div>
           `);
 
-          // Speichere den Automaten-Namen direkt im Marker
-          (marker as any).automatName = automat.name;
+          (marker as any).automatData = automat;
+
+          this.automatNames.push({
+            name: automat.name,
+            city: automat.city,
+            zipcode: automat.zipcode,
+            machines: automat.machines
+          });
 
           this.automatMarkers.push(marker);
+          marker.addTo(this.map!);
         });
-        console.log('Automaten-Marker geladen:', this.automatMarkers.length);
       })
       .catch(error => {
         console.error('Fehler beim Laden der Automaten:', error);
       });
   }
 
-  // === Suche nach Bundesland ===
-  searchState(stateName: string): void {
-    if (!stateName || !this.geoJsonLayer) {
-      return;
-    }
-
-    const layers = this.geoJsonLayer.getLayers();
-    let found = false;
-
-    layers.forEach((layer: any) => {
-      const feature = layer.feature;
-      const nameProperty = feature.properties.name;
-
-      if (!nameProperty) {
-        console.warn('Kein name gefunden bei:', feature);
-        return;
-      }
-
-      const name = nameProperty.toLowerCase();
-
-      if (name === stateName.toLowerCase()) {
-        const bounds = layer.getBounds();
-
-        layer.openPopup();
-
-        layer.setStyle({
-          color: '#FF5733',
-          weight: 4,
-          fillOpacity: 0.6
-        });
-
-        this.map!.fitBounds(bounds, {
-          animate: true,
-          duration: 1
-        });
-
-        found = true;
-      } else {
-        // Andere Bundesländer zurücksetzen
-        layer.setStyle({
-          color: '#3388ff',
-          weight: 2,
-          fillOpacity: 0.2
-        });
-      }
-    });
-
-    if (!found) {
-      alert('Bundesland nicht gefunden!');
-    }
-  }
-
-  // === Suche nach Automaten ===
-  searchAutomat(searchTerm: string): void {
-    console.log('Suche gestartet mit:', searchTerm);
-
+  searchCityZip(searchTerm: string): void {
     if (!searchTerm) {
-      console.log('Suchfeld leer, zeige alle Marker.');
-      this.automatMarkers.forEach(marker => {
-        if (!this.map!.hasLayer(marker)) {
-          this.map!.addLayer(marker);
-        }
-      });
-      this.noAutomatFound = false;
+      this.showAllAutomaten();
       return;
     }
 
     const lowerCaseSearch = searchTerm.toLowerCase();
-    let found = false;
+    const foundMarkers: L.Marker[] = [];
 
     this.automatMarkers.forEach(marker => {
-      const automatName = (marker as any).automatName;
+      const automat = (marker as any).automatData;
+      const city = automat.city?.toLowerCase() || '';
+      const zipcode = automat.zipcode?.toLowerCase() || '';
 
-      console.log('Vergleiche:', automatName, 'mit Suchbegriff:', lowerCaseSearch);
-
-      if (automatName && automatName.toLowerCase().includes(lowerCaseSearch)) {
-        console.log('Treffer:', automatName);
+      if (city.includes(lowerCaseSearch) || zipcode.includes(lowerCaseSearch)) {
         if (!this.map!.hasLayer(marker)) {
           this.map!.addLayer(marker);
         }
-        found = true;
+        foundMarkers.push(marker);
       } else {
         if (this.map!.hasLayer(marker)) {
-          console.log('Kein Treffer, entferne:', automatName);
           this.map!.removeLayer(marker);
         }
       }
     });
 
-    this.noAutomatFound = !found;
+    this.handleSearchResult(foundMarkers);
+  }
 
-    if (!found) {
-      console.log('Kein Automat gefunden!');
-    } else {
-      console.log('Automaten gefunden!');
+  searchAutomat(searchName: string): void {
+    if (!searchName) {
+      this.showAllAutomaten();
+      return;
     }
+
+    const lowerCaseSearch = searchName.toLowerCase();
+    const foundMarkers: L.Marker[] = [];
+
+    this.automatMarkers.forEach(marker => {
+      const automat = (marker as any).automatData;
+      const name = automat.name?.toLowerCase() || '';
+
+      if (name.includes(lowerCaseSearch)) {
+        if (!this.map!.hasLayer(marker)) {
+          this.map!.addLayer(marker);
+        }
+        foundMarkers.push(marker);
+      } else {
+        if (this.map!.hasLayer(marker)) {
+          this.map!.removeLayer(marker);
+        }
+      }
+    });
+
+    this.handleSearchResult(foundMarkers);
+  }
+
+  private handleSearchResult(foundMarkers: L.Marker[]): void {
+    if (foundMarkers.length === 0) {
+      this.noAutomatFound = true;
+    } else {
+      this.noAutomatFound = false;
+
+      if (foundMarkers.length === 1) {
+        const latLng = foundMarkers[0].getLatLng();
+        this.map!.setView(latLng, 10, { animate: true });
+        foundMarkers[0].openPopup();
+      } else {
+        const group = L.featureGroup(foundMarkers);
+        this.map!.fitBounds(group.getBounds(), { animate: true });
+      }
+    }
+  }
+
+  private showAllAutomaten(): void {
+    this.automatMarkers.forEach(marker => {
+      if (!this.map!.hasLayer(marker)) {
+        this.map!.addLayer(marker);
+      }
+    });
+    this.noAutomatFound = false;
   }
 }
