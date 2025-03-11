@@ -174,19 +174,23 @@ export class AppComponent implements OnInit {
   }
 
   searchCityZip(searchTerm: string): void {
-    if (!searchTerm) {
+    const trimmedTerm = searchTerm.trim();  // Leerzeichen entfernen!
+    console.log('Stadt/PLZ-Suche gestartet mit:', trimmedTerm);
+  
+    if (!trimmedTerm) {
+      console.log('Eingabe leer → alle Automaten anzeigen');
       this.showAllAutomaten();
       return;
     }
-
-    const lowerCaseSearch = searchTerm.toLowerCase();
+  
+    const lowerCaseSearch = trimmedTerm.toLowerCase();
     const foundMarkers: L.Marker[] = [];
-
+  
     this.automatMarkers.forEach(marker => {
       const automat = (marker as any).automatData;
       const city = automat.city?.toLowerCase() || '';
       const zipcode = automat.zipcode?.toLowerCase() || '';
-
+  
       if (city.includes(lowerCaseSearch) || zipcode.includes(lowerCaseSearch)) {
         if (!this.map!.hasLayer(marker)) {
           this.map!.addLayer(marker);
@@ -198,23 +202,28 @@ export class AppComponent implements OnInit {
         }
       }
     });
-
+  
     this.handleSearchResult(foundMarkers);
   }
+  
 
   searchAutomat(searchName: string): void {
-    if (!searchName) {
+    const trimmedName = searchName.trim();  // Leerzeichen entfernen!
+    console.log('Automaten-Suche gestartet mit:', trimmedName);
+  
+    if (!trimmedName) {
+      console.log('Eingabe leer → alle Automaten anzeigen');
       this.showAllAutomaten();
       return;
     }
-
-    const lowerCaseSearch = searchName.toLowerCase();
+  
+    const lowerCaseSearch = trimmedName.toLowerCase();
     const foundMarkers: L.Marker[] = [];
-
+  
     this.automatMarkers.forEach(marker => {
       const automat = (marker as any).automatData;
       const name = automat.name?.toLowerCase() || '';
-
+  
       if (name.includes(lowerCaseSearch)) {
         if (!this.map!.hasLayer(marker)) {
           this.map!.addLayer(marker);
@@ -226,9 +235,10 @@ export class AppComponent implements OnInit {
         }
       }
     });
-
+  
     this.handleSearchResult(foundMarkers);
   }
+  
 
   private handleSearchResult(foundMarkers: L.Marker[]): void {
     if (foundMarkers.length === 0) {

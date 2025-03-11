@@ -1,12 +1,13 @@
 <div class="controls">
 
   <!-- Suche nach Stadt oder PLZ -->
-  <input
+<input
     type="text"
-    placeholder="Stadt oder Postleitzahl suchen..."
-    (keyup.enter)="searchCityZip(cityZipInput.value)"
-    #cityZipInput
-  />
+    placeholder="Suche nach Stadt oder PLZ..."
+    (input)="searchCityZip(stateInput.value)"
+    #stateInput
+/>
+
 
   <!-- Dropdown mit Name, Stadt, PLZ, Maschinen -->
   <select (change)="searchAutomat(automatSelect.value)" #automatSelect>
