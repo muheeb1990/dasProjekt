@@ -43,7 +43,7 @@ export class AppComponent implements OnInit {
     this.map = L.map('map', {
       zoomControl: true,
       minZoom: 6,
-      maxZoom: 12,
+      maxZoom: 13,
       attributionControl: false,
       maxBounds: [
         [55.5, 5],   // Nordwesten
