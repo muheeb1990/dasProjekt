@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
 
-// 🟦 Leaflet Icons fixen
+// Standard-Leaflet-Icons setzen
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -22,7 +22,10 @@ export class AppComponent implements OnInit {
 
   map: L.Map | null = null;
   geoJsonLayer: L.GeoJSON<any> | null = null;
+
   automatMarkers: L.Marker[] = [];
+
+  // Automaten-Liste für Dropdown
   automatNames: {
     name: string;
     city: string;
@@ -40,28 +43,39 @@ export class AppComponent implements OnInit {
     this.map = L.map('map', {
       zoomControl: true,
       minZoom: 6,
-      maxZoom: 10,
+      maxZoom: 12,
       attributionControl: false,
       maxBounds: [
-        [55.5, 5],     // Norden / Westen (etwas enger)
-        [47, 16]       // Süden / Osten
+        [55.5, 5],   // Nordwesten
+        [47, 16]     // Südosten
       ],
-      maxBoundsViscosity: 1.0
-    }).setView([51.1657, 10.4515], 8);  // 10% kleiner, Standard Zoom 8
-    
-    this.loadGeoJson();   // Bundesländer laden
-    this.loadAutomaten(); // Automaten laden
+      maxBoundsViscosity: 1.0,
+
+      // SMOOTH ZOOM & SCROLL SETTINGS
+      zoomAnimation: true,
+      zoomAnimationThreshold: 4,
+      easeLinearity: 0.35,
+      zoomSnap: 0.1,
+      zoomDelta: 0.5
+    }).setView([51.1657, 10.4515], 8);
+
+    // ScrollWheel aktivieren (Optional)
+    this.map.scrollWheelZoom.enable();
+
+    // Jetzt laden wir GeoJSON & Automaten
+    this.loadGeoJson();
+    this.loadAutomaten();
   }
-  
+
   private loadGeoJson(): void {
     fetch('assets/bundeslaender.geojson')
       .then(response => response.json())
       .then(geojsonData => {
         this.geoJsonLayer = L.geoJSON(geojsonData, {
           style: {
-            color: 'white',
+            color: 'white',      // Randfarbe Standard
             weight: 2,
-            fillColor: 'black',
+            fillColor: 'black',  // Füllfarbe Standard
             fillOpacity: 1
           },
           onEachFeature: (feature, layer) => {
@@ -88,24 +102,22 @@ export class AppComponent implements OnInit {
                 layer.openPopup();
               }
             });
+
             layer.bindPopup(`<b>${feature.properties.name}</b>`);
           }
         }).addTo(this.map!);
-  
-        // ✅ Hier das neue Padding (kleiner als vorher)
+
         this.map!.fitBounds(this.geoJsonLayer.getBounds(), {
-          padding: [70, 70]
+          padding: [10, 10] // kleineres Padding für bessere Darstellung
         });
       });
   }
-  
 
   private loadAutomaten(): void {
     fetch('assets/automaten.json')
       .then(response => response.json())
       .then(automaten => {
         automaten.forEach((automat: any) => {
-
           const lat = parseFloat(automat.lat);
           const lon = parseFloat(automat.lon);
 
@@ -226,11 +238,25 @@ export class AppComponent implements OnInit {
 
       if (foundMarkers.length === 1) {
         const latLng = foundMarkers[0].getLatLng();
-        this.map!.setView(latLng, 10, { animate: true });
+
+        // SMOOTH FLY TO single marker
+        this.map!.flyTo(latLng, 10, {
+          animate: true,
+          duration: 1.5,
+          easeLinearity: 0.25
+        });
+
         foundMarkers[0].openPopup();
       } else {
         const group = L.featureGroup(foundMarkers);
-        this.map!.fitBounds(group.getBounds(), { animate: true });
+
+        // SMOOTH FLY TO bounds
+        this.map!.flyToBounds(group.getBounds(), {
+          padding: [20, 20],
+          animate: true,
+          duration: 1.5,
+          easeLinearity: 0.25
+        });
       }
     }
   }
