@@ -35,23 +35,23 @@ export class AppComponent implements OnInit {
 
   noAutomatFound: boolean = false;
 
+  darkMode: boolean = false; // Darkmode Toggle
+
   ngOnInit(): void {
     this.initMap();
   }
 
   private initMap(): void {
     this.map = L.map('map', {
-      zoomControl: true,
+      zoomControl: false, // ⛔️ Kein Zoom-Control-Button
       minZoom: 6,
       maxZoom: 13,
       attributionControl: false,
       maxBounds: [
-        [55.5, 5],   // Nordwesten
-        [47, 16]     // Südosten
+        [55.5, 5],
+        [47, 16]
       ],
       maxBoundsViscosity: 1.0,
-
-      // SMOOTH ZOOM & SCROLL SETTINGS
       zoomAnimation: true,
       zoomAnimationThreshold: 4,
       easeLinearity: 0.35,
@@ -59,10 +59,8 @@ export class AppComponent implements OnInit {
       zoomDelta: 0.5
     }).setView([51.1657, 10.4515], 8);
 
-    // ScrollWheel aktivieren (Optional)
     this.map.scrollWheelZoom.enable();
 
-    // Jetzt laden wir GeoJSON & Automaten
     this.loadGeoJson();
     this.loadAutomaten();
   }
@@ -73,9 +71,9 @@ export class AppComponent implements OnInit {
       .then(geojsonData => {
         this.geoJsonLayer = L.geoJSON(geojsonData, {
           style: {
-            color: 'white',      // Randfarbe Standard
-            weight: 2,
-            fillColor: 'black',  // Füllfarbe Standard
+            color: 'white',
+            weight: 0.5,
+            fillColor: 'black',
             fillOpacity: 1
           },
           onEachFeature: (feature, layer) => {
@@ -85,7 +83,7 @@ export class AppComponent implements OnInit {
                 target.setStyle({
                   fillColor: 'white',
                   color: 'black',
-                  weight: 2,
+                  weight: 0.5,
                   fillOpacity: 1
                 });
               },
@@ -94,12 +92,9 @@ export class AppComponent implements OnInit {
                 target.setStyle({
                   fillColor: 'black',
                   color: 'white',
-                  weight: 2,
+                  weight: 0.5,
                   fillOpacity: 1
                 });
-              },
-              click: () => {
-                layer.openPopup();
               }
             });
 
@@ -108,89 +103,109 @@ export class AppComponent implements OnInit {
         }).addTo(this.map!);
 
         this.map!.fitBounds(this.geoJsonLayer.getBounds(), {
-          padding: [10, 10] // kleineres Padding für bessere Darstellung
+          padding: [10, 10]
         });
       });
   }
 
   private loadAutomaten(): void {
-    fetch('assets/automaten.json')
-      .then(response => response.json())
+    fetch('/api/locations.php')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(automaten => {
+        console.log('Automaten geladen:', automaten);
+  
         automaten.forEach((automat: any) => {
           const lat = parseFloat(automat.lat);
           const lon = parseFloat(automat.lon);
-
+  
           if (!lat || !lon) {
             console.warn('Automat ohne gültige Koordinaten:', automat);
             return;
           }
-
+  
           const marker = L.marker([lat, lon]);
-
+  
           marker.bindTooltip(automat.name, {
             permanent: false,
             direction: 'top',
             opacity: 0.9
           });
-
+  
           marker.bindPopup(`
-            <div class="popup-content">
-              <h3>${automat.name}</h3>
-              ${automat.nameSub ? `<p class="subname">${automat.nameSub}</p>` : ''}
-              <p><strong>Adresse:</strong><br>
-                ${automat.address}<br>
-                ${automat.zipcode} ${automat.city} (${automat.country})
+            <div class="popup-content" style="max-width: 180px; font-size: 12px; line-height: 1.3;">
+              <h4 style="margin: 0 0 5px; font-size: 14px;">${automat.name}</h4>
+              ${automat.nameSub ? `<p style="margin: 0 0 5px; font-size: 12px; color: #777;">${automat.nameSub}</p>` : ''}
+              <p style="margin: 0 0 5px;">
+                📍 ${automat.zipcode} ${automat.city}<br>${automat.address}
               </p>
-              <p><strong>Maschinen:</strong> ${automat.machines}</p>
-              <p><strong>Kontakt:</strong><br>
-                📞 <a href="tel:${automat.phone}">${automat.phone}</a><br>
-                ✉️ <a href="mailto:${automat.email}">${automat.email}</a>
-              </p>
-              <p><strong>Öffnungszeiten:</strong><br>
-                Von: ${automat.working_from} Uhr bis ${automat.working_till} Uhr<br>
-                Wochenende: ${automat.on_weekends}
-              </p>
-              <p class="updated">Letzte Aktualisierung:<br> ${automat.date}</p>
+              <p style="margin: 0 0 5px;">🕒 ${automat.working_from} - ${automat.working_till}</p>
+              <p style="margin: 0 0 5px;">☎️ <a href="tel:${automat.phone}">${automat.phone}</a></p>
+              <p style="margin: 0;">✉️ <a href="mailto:${automat.email}">${automat.email}</a></p>
+              <small style="display:block; margin-top: 5px; color: #aaa;">${automat.date}</small>
             </div>
-          `);
-
+          `, { maxWidth: 200, closeButton: true });
+  
           (marker as any).automatData = automat;
-
+  
+          // ➡️ Automaten für Dropdown speichern
           this.automatNames.push({
             name: automat.name,
             city: automat.city,
             zipcode: automat.zipcode,
             machines: automat.machines
           });
-
+  
           this.automatMarkers.push(marker);
           marker.addTo(this.map!);
         });
+  
+        // 🔧 ➡️ NACH DEM LADEN: Sortiere alphabetisch nach Stadtname & Automatenname
+        this.automatNames.sort((a, b) => {
+          const cityA = a.city.toLowerCase();
+          const cityB = b.city.toLowerCase();
+  
+          if (cityA < cityB) return -1;
+          if (cityA > cityB) return 1;
+  
+          // Wenn Städte gleich → Sortiere nach Automatenname
+          const nameA = a.name.toLowerCase();
+          const nameB = b.name.toLowerCase();
+  
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
+  
+          return 0;
+        });
+  
+        console.log('Sortierte Automaten:', this.automatNames);
       })
       .catch(error => {
         console.error('Fehler beim Laden der Automaten:', error);
       });
   }
+  
 
   searchCityZip(searchTerm: string): void {
-    const trimmedTerm = searchTerm.trim();  // Leerzeichen entfernen!
-    console.log('Stadt/PLZ-Suche gestartet mit:', trimmedTerm);
-  
+    const trimmedTerm = searchTerm.trim();
+
     if (!trimmedTerm) {
-      console.log('Eingabe leer → alle Automaten anzeigen');
       this.showAllAutomaten();
       return;
     }
-  
+
     const lowerCaseSearch = trimmedTerm.toLowerCase();
     const foundMarkers: L.Marker[] = [];
-  
+
     this.automatMarkers.forEach(marker => {
       const automat = (marker as any).automatData;
       const city = automat.city?.toLowerCase() || '';
       const zipcode = automat.zipcode?.toLowerCase() || '';
-  
+
       if (city.includes(lowerCaseSearch) || zipcode.includes(lowerCaseSearch)) {
         if (!this.map!.hasLayer(marker)) {
           this.map!.addLayer(marker);
@@ -202,28 +217,25 @@ export class AppComponent implements OnInit {
         }
       }
     });
-  
+
     this.handleSearchResult(foundMarkers);
   }
-  
 
   searchAutomat(searchName: string): void {
-    const trimmedName = searchName.trim();  // Leerzeichen entfernen!
-    console.log('Automaten-Suche gestartet mit:', trimmedName);
-  
+    const trimmedName = searchName.trim();
+
     if (!trimmedName) {
-      console.log('Eingabe leer → alle Automaten anzeigen');
       this.showAllAutomaten();
       return;
     }
-  
+
     const lowerCaseSearch = trimmedName.toLowerCase();
     const foundMarkers: L.Marker[] = [];
-  
+
     this.automatMarkers.forEach(marker => {
       const automat = (marker as any).automatData;
       const name = automat.name?.toLowerCase() || '';
-  
+
       if (name.includes(lowerCaseSearch)) {
         if (!this.map!.hasLayer(marker)) {
           this.map!.addLayer(marker);
@@ -235,10 +247,9 @@ export class AppComponent implements OnInit {
         }
       }
     });
-  
+
     this.handleSearchResult(foundMarkers);
   }
-  
 
   private handleSearchResult(foundMarkers: L.Marker[]): void {
     if (foundMarkers.length === 0) {
@@ -248,8 +259,6 @@ export class AppComponent implements OnInit {
 
       if (foundMarkers.length === 1) {
         const latLng = foundMarkers[0].getLatLng();
-
-        // SMOOTH FLY TO single marker
         this.map!.flyTo(latLng, 10, {
           animate: true,
           duration: 1.5,
@@ -260,7 +269,6 @@ export class AppComponent implements OnInit {
       } else {
         const group = L.featureGroup(foundMarkers);
 
-        // SMOOTH FLY TO bounds
         this.map!.flyToBounds(group.getBounds(), {
           padding: [20, 20],
           animate: true,
@@ -279,4 +287,25 @@ export class AppComponent implements OnInit {
     });
     this.noAutomatFound = false;
   }
+
+  toggleMode(): void {
+    this.darkMode = !this.darkMode;
+  
+    const body = document.body;
+    const mapDiv = document.getElementById('map');
+    const button = document.querySelector('.mode-toggle');
+  
+    if (this.darkMode) {
+      body.classList.add('dark-mode');
+      mapDiv?.classList.add('dark');
+      mapDiv?.classList.remove('light');
+      if (button) button.textContent = 'Light Mode';
+    } else {
+      body.classList.remove('dark-mode');
+      mapDiv?.classList.remove('dark');
+      mapDiv?.classList.add('light');
+      if (button) button.textContent = 'Dark Mode';
+    }
+  }
+  
 }

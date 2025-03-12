@@ -1,0 +1,9 @@
+{
+    "/api": {
+    "target": "https://muheeb.createoceans.eu",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+    }
+}
+  

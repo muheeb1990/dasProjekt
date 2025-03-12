@@ -1,104 +1,141 @@
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 #map {
-    height: 90vh;
-    width: 100%;
-    background-color: #696868;
+  height: 100vh;
+  width: 100%;
 }
 
+/* === Hintergrund für Dark/Light Mode === */
+#map.light {
+  background-color: #f0f0f0;
+}
+
+#map.dark {
+  background-color: #333333;
+}
+
+/* === Controls === */
 .controls {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
-    background-color: black;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px;
+  left: 40px;
+  top: 10px;
+  z-index: 100;
 }
 
 .controls input,
 .controls select {
-    padding: 10px;
-    font-size: 16px;
-    width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.controls select {
-    background-color: #f8f8f8;
-    color: #333;
+/* === Styles im Dark Mode === */
+.controls.dark input,
+.controls.dark select {
+  background-color: #535151;
+  color: #fff;
+  border: none;
+}
+
+/* === Light Mode === */
+.controls.light input,
+.controls.light select {
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
 }
 
 .no-result {
-    text-align: center;
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: red;
+  font-weight: bold;
+  z-index: 1000;
 }
 
+/* === Dark/Light Mode Button === */
+.mode-toggle {
+  position: absolute;
+  bottom: 20px;
+  left: 50px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
-.leaflet-popup-content {
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    color: #333;
-    margin: 0;
+.mode-toggle:hover {
+  background-color: #0056b3;
+}
 
+/* === Popup Inhalt kompakt === */
+.leaflet-popup-content-wrapper {
+  padding: 5px;
+  max-width: 200px;
 }
 
 .popup-content {
-    max-width: 250px;
+  max-width: 180px;
+  padding: 5px;
 }
 
-.popup-content h3 {
-    margin-top: 0;
-    margin-bottom: 5px;
-    font-size: 18px;
-    color: #007bff; /* Blau für Titel */
-}
-
-.popup-content .subname {
-    margin-top: -5px;
-    font-style: italic;
-    color: #666;
+.popup-content h4 {
+  font-size: 14px;
+  color: #007bff;
 }
 
 .popup-content p {
-    margin: 5px 0;
-    line-height: 1.4;
-}
-
-.popup-content strong {
-    color: #333;
+  font-size: 12px;
+  margin: 3px 0;
 }
 
 .popup-content a {
-    color: #007bff;
-    text-decoration: none;
+  color: #007bff;
+  text-decoration: none;
 }
 
 .popup-content a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
-.popup-content .updated {
-    font-size: 12px;
-    color: #999;
-    margin-top: 10px;
+.popup-content small {
+  font-size: 10px;
+  color: #999;
+  margin-top: 5px;
+  display: block;
 }
+
+/* === Leaflet Z-Index Ebenen === */
 .leaflet-container {
-    z-index: 0; /* Default */
+  z-index: 0;
 }
 
 .leaflet-popup {
-    z-index: 10000 !important; /* Popups ganz oben! */
+  z-index: 10000 !important;
 }
 
 .leaflet-marker-icon,
 .leaflet-pane,
 .leaflet-tooltip {
-    z-index: 500; /* Marker und Tooltip normal */
+  z-index: 500;
 }
-  
+
+/* === Optional: Zoom-Control entfernen === */
+.leaflet-control-zoom {
+  display: none;
+}

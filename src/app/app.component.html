@@ -1,27 +1,34 @@
-<div class="controls">
+<div id="map">
 
-  <!-- Suche nach Stadt oder PLZ -->
-<input
-    type="text"
-    placeholder="Suche nach Stadt oder PLZ..."
-    (input)="searchCityZip(stateInput.value)"
-    #stateInput
-/>
+  <!-- === Steuerelemente (Suchfeld & Dropdown) === -->
+  <div class="controls" [ngClass]="darkMode ? 'dark' : 'light'">
 
+    <!-- Suche nach Stadt oder Postleitzahl -->
+    <input
+      type="text"
+      placeholder="Stadt oder PLZ"
+      (input)="searchCityZip(stateInput.value)"
+      #stateInput
+    />
 
-  <!-- Dropdown mit Name, Stadt, PLZ, Maschinen -->
-  <select (change)="searchAutomat(automatSelect.value)" #automatSelect>
-    <option value="">Alle Automaten anzeigen</option>
+    <!-- Dropdown-Liste: Automaten alphabetisch nach Stadt -->
+    <select (change)="searchAutomat(automatSelect.value)" #automatSelect>
+      <option value="">Alle Automaten anzeigen</option>
+      <option *ngFor="let automat of automatNames" [value]="automat.name">
+        {{ automat.city }} - {{ automat.name }} (PLZ: {{ automat.zipcode }}, Maschinen: {{ automat.machines }})
+      </option>
+    </select>
 
-    <option *ngFor="let automat of automatNames" [value]="automat.name">
-      {{ automat.name }} - {{ automat.city }} (PLZ: {{ automat.zipcode }}, Maschinen: {{ automat.machines }})
-    </option>
-  </select>
+  </div>
+
+  <!-- === Kein Ergebnis Hinweis === -->
+  <p *ngIf="noAutomatFound" class="no-result">
+    Keine Automaten gefunden!
+  </p>
+
+  <!-- === Dark Mode / Light Mode Toggle Button === -->
+  <button (click)="toggleMode()" class="mode-toggle">
+    {{ darkMode ? 'Light Mode' : 'Dark Mode' }}
+  </button>
 
 </div>
-
-<p *ngIf="noAutomatFound" class="no-result">
-  Keine Automaten gefunden!
-</p>
-
-<div id="map"></div>
