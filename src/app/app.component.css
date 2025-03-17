@@ -68,7 +68,7 @@ html, body {
 }
 
 /* === Dark/Light Mode Button === */
-.mode-toggle {
+.mode-toggle{
   position: absolute;
   bottom: 20px;
   left: 50px;
@@ -142,3 +142,41 @@ html, body {
   display: none;
 }
 
+.reset-button{
+  position: absolute;
+  bottom: 20px;
+  left: 200px;
+  padding: 10px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  background-color: #0056b3;
+}
+
+.locate-button {
+  position: absolute;
+  bottom: 20px;
+  left: 350px; /* oder wo du willst! */
+  padding: 10px 10px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.locate-button:hover {
+  background-color: #1e7e34;
+}
+.current-location-popup {
+  color: #ff4d4d;  /* Helles Rot */
+  font-weight: bold;
+  font-size: 14px;
+}

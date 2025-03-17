@@ -18,6 +18,12 @@ L.Icon.Default.mergeOptions({
   imports: [CommonModule]
 })
 export class AppComponent implements OnInit {
+locateMe() {
+throw new Error('Method not implemented.');
+}
+resetMap() {
+throw new Error('Method not implemented.');
+}
   map: L.Map | null = null;
   geoJsonLayer: L.GeoJSON<any> | null = null;
 
