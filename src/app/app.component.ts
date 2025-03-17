@@ -230,7 +230,7 @@ export class AppComponent implements OnInit {
         .bindPopup('<span class="current-location-popup">Du bist hier!</span>')
         .openPopup();
 
-      this.map!.flyTo(e.latlng, 9, {
+      this.map!.flyTo(e.latlng, 14, {
         animate: true,
         duration: 1.5
       });
