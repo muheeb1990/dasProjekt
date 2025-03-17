@@ -2,11 +2,13 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  
 }
 
 #map {
   height: 100vh;
   width: 100%;
+  
 }
 
 /* === Hintergrund für Dark/Light Mode === */
@@ -26,7 +28,7 @@ html, body {
   gap: 20px;
   padding: 10px;
   left: 40px;
-  top: 200px;
+  top: 20px;
   z-index: 100;
 }
 
