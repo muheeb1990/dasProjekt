@@ -2,13 +2,11 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  
 }
 
 #map {
   height: 100vh;
   width: 100%;
-  
 }
 
 /* === Hintergrund für Dark/Light Mode === */
@@ -41,6 +39,13 @@ html, body {
   border-radius: 5px;
 }
 
+/* Focus ohne Border */
+.controls input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
 /* === Styles im Dark Mode === */
 .controls.dark input,
 .controls.dark select {
@@ -68,7 +73,7 @@ html, body {
 }
 
 /* === Dark/Light Mode Button === */
-.mode-toggle{
+.mode-toggle {
   position: absolute;
   bottom: 20px;
   left: 50px;
@@ -142,7 +147,8 @@ html, body {
   display: none;
 }
 
-.reset-button{
+/* === Reset Button === */
+.reset-button {
   position: absolute;
   bottom: 20px;
   left: 200px;
@@ -159,10 +165,11 @@ html, body {
   background-color: #0056b3;
 }
 
+/* === Locate Button === */
 .locate-button {
   position: absolute;
   bottom: 20px;
-  left: 350px; /* oder wo du willst! */
+  left: 350px;
   padding: 10px 10px;
   background-color: #28a745;
   color: #fff;
@@ -175,6 +182,8 @@ html, body {
 .locate-button:hover {
   background-color: #1e7e34;
 }
+
+/* === Current Location Popup === */
 .current-location-popup {
   color: #ff4d4d;  /* Helles Rot */
   font-weight: bold;

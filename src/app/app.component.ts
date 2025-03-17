@@ -139,42 +139,69 @@ export class AppComponent implements OnInit {
         automaten.forEach((automat: any) => {
           const lat = parseFloat(automat.lat);
           const lon = parseFloat(automat.lon);
-
+  
           if (!lat || !lon) return;
-
+  
           const marker = L.marker([lat, lon]);
-
+  
           marker.bindTooltip(automat.name, {
             permanent: false,
             direction: 'top',
             opacity: 0.9
           });
-
+  
+          // 🕒 Öffnungszeiten logik
+          const from = automat.working_from?.trim() || '';
+          const till = automat.working_till?.trim() || '';
+  
+          const simplifyTime = (time: string): string => {
+            // Uhrzeitformat vereinfachen (08:00:00 => 08:00)
+            if (!time) return '';
+            return time.length === 8 ? time.substring(0, 5) : time;
+          };
+  
+          const simplifiedFrom = simplifyTime(from);
+          const simplifiedTill = simplifyTime(till);
+  
+          const isAlwaysOpen =
+            (simplifiedFrom === '00:00' && (simplifiedTill === '23:59' || simplifiedTill === '24:00' || simplifiedTill === '00:00')) ||
+            from.toLowerCase() === '24/7' || till.toLowerCase() === '24/7';
+  
+          let openingHours = '';
+          if (isAlwaysOpen) {
+            openingHours = '🕒 Rund um die Uhr geöffnet (24/7)';
+          } else if (simplifiedFrom && simplifiedTill) {
+            openingHours = `🕒 ${simplifiedFrom} - ${simplifiedTill}`;
+          } else {
+            openingHours = '🕒 Keine Öffnungszeiten verfügbar';
+          }
+  
           const popupContent = `
             <div class="popup-content" style="max-width: 180px; font-size: 12px; line-height: 1.3;">
               <h4 style="margin: 0 0 5px;">${automat.name}</h4>
               ${automat.nameSub ? `<p style="color: #777;">${automat.nameSub}</p>` : ''}
               <p>📍 ${automat.zipcode} ${automat.city}<br>${automat.address}</p>
-              ${automat.working_from && automat.working_till ?
-                `<p>🕒 ${automat.working_from} - ${automat.working_till}</p>` : ''}
+              <p>${openingHours}</p>
               ${automat.phone ? `<p>☎️ <a href="tel:${automat.phone}">${automat.phone}</a></p>` : ''}
               ${automat.email ? `<p>✉️ <a href="mailto:${automat.email}">${automat.email}</a></p>` : ''}
             </div>`;
-
+  
           marker.bindPopup(popupContent, { maxWidth: 200 });
+  
           (marker as any).automatData = automat;
-
+  
           this.automatNames.push({
             name: automat.name,
             city: automat.city,
             zipcode: automat.zipcode,
             machines: automat.machines
           });
-
+  
           this.automatMarkers.push(marker);
           marker.addTo(this.map!);
         });
-
+  
+        // Nach Städten und Automaten sortieren
         this.automatNames.sort((a, b) => {
           const cityA = a.city.toLowerCase();
           const cityB = b.city.toLowerCase();
@@ -182,9 +209,12 @@ export class AppComponent implements OnInit {
             ? a.name.toLowerCase().localeCompare(b.name.toLowerCase())
             : cityA.localeCompare(cityB);
         });
+      })
+      .catch(error => {
+        console.error('Fehler beim Laden der Automaten:', error);
       });
   }
-
+  
   private showCurrentLocation(): void {
     if (!this.map) return;
 
@@ -253,20 +283,23 @@ export class AppComponent implements OnInit {
 
   searchCityZip(searchTerm: string): void {
     const trimmedTerm = searchTerm.trim();
+  
     if (!trimmedTerm) {
       this.showAllAutomaten();
       return;
     }
-
+  
     const lowerCaseSearch = trimmedTerm.toLowerCase();
+  
     const foundMarkers = this.automatMarkers.filter(marker => {
       const automat = (marker as any).automatData;
       return automat.city?.toLowerCase().includes(lowerCaseSearch) ||
              automat.zipcode?.toLowerCase().includes(lowerCaseSearch);
     });
-
+  
     this.updateMapForSearch(foundMarkers);
   }
+  
 
   searchAutomat(searchName: string): void {
     const trimmedName = searchName.trim();
@@ -286,18 +319,18 @@ export class AppComponent implements OnInit {
 
   private updateMapForSearch(foundMarkers: L.Marker[]): void {
     this.automatMarkers.forEach(marker => this.map!.removeLayer(marker));
-
+  
     if (foundMarkers.length === 0) {
       this.noAutomatFound = true;
       return;
     }
-
+  
     this.noAutomatFound = false;
-
+  
     foundMarkers.forEach(marker => marker.addTo(this.map!));
-
+  
     if (foundMarkers.length === 1) {
-      this.map!.flyTo(foundMarkers[0].getLatLng(), 10, {
+      this.map!.flyTo(foundMarkers[0].getLatLng(), 12, { // Zoom auf Straßenebene
         animate: true,
         duration: 1.5
       });
@@ -311,6 +344,8 @@ export class AppComponent implements OnInit {
       });
     }
   }
+  
+  
 
   private showAllAutomaten(): void {
     this.automatMarkers.forEach(marker => {
@@ -340,16 +375,16 @@ export class AppComponent implements OnInit {
 
   resetMap(): void {
     this.showAllAutomaten();
-
+  
     if (this.map) {
-      this.map.setView([51.1657, 10.4515], 7);
-      this.disableStreetLayer();
-      this.enableGeoJsonStyles();
+      this.map.setView([51.1657, 10.4515], 6); // Start-View
+      this.disableStreetLayer();               // Straßenlayer aus
+      this.enableGeoJsonStyles();              // Bundesländer wieder aktiv
     }
-
+  
     (document.querySelector('#stateInput') as HTMLInputElement).value = '';
     (document.querySelector('#automatSelect') as HTMLSelectElement).value = '';
-
+  
     this.noAutomatFound = false;
   }
 }
