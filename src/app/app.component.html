@@ -30,15 +30,16 @@
   Keine Automaten gefunden!
 </p>
 
-<div class="button-group">
-  <button (click)="toggleMode()" class="mode-toggle">
+<div class="btns">
+  <button (click)="toggleMode()" class="mode-toggle btn">
     {{ darkMode ? 'Light Mode' : 'Dark Mode' }}
   </button>
-  <button (click)="resetMap()" class="reset-button">
+  <button (click)="resetMap()" class="reset-button btn">
      Zurücksetzen
+  </button>
+  <button (click)="locateMe()" class="locate-button btn">
+    📍 Wo bin ich?
   </button>
 </div>
 
-<button (click)="locateMe()" class="locate-button">
-  📍 Wo bin ich?
-</button>
+

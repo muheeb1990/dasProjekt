@@ -169,7 +169,7 @@ export class AppComponent implements OnInit {
   
           let openingHours = '';
           if (isAlwaysOpen) {
-            openingHours = '🕒 Rund um die Uhr geöffnet (24/7)';
+            openingHours = '🕒 Rund um die Uhr (24/7)';
           } else if (simplifiedFrom && simplifiedTill) {
             openingHours = `🕒 ${simplifiedFrom} - ${simplifiedTill}`;
           } else {
@@ -180,7 +180,7 @@ export class AppComponent implements OnInit {
             <div class="popup-content" style="max-width: 180px; font-size: 12px; line-height: 1.3;">
               <h4 style="margin: 0 0 5px;">${automat.name}</h4>
               ${automat.nameSub ? `<p style="color: #777;">${automat.nameSub}</p>` : ''}
-              <p>📍 ${automat.zipcode} ${automat.city}<br>${automat.address}</p>
+              <p> ${automat.zipcode} ${automat.city}<br>${automat.address}</p>
               <p>${openingHours}</p>
               ${automat.phone ? `<p>☎️ <a href="tel:${automat.phone}">${automat.phone}</a></p>` : ''}
               ${automat.email ? `<p>✉️ <a href="mailto:${automat.email}">${automat.email}</a></p>` : ''}

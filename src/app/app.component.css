@@ -19,27 +19,35 @@ html, body {
 }
 
 /* === Controls === */
+select{
+  appearance: none;
+}
 .controls {
   position: absolute;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   gap: 20px;
-  padding: 10px;
-  left: 40px;
-  top: 20px;
-  z-index: 100;
+  left: 2%;
+  top: 20px
+ 
 }
-
+.controls select{
+  width: 50%;
+}
+.controls input{
+  width: 46%;
+}
 .controls input,
 .controls select {
   padding: 10px;
   font-size: 16px;
-  width: 200px;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 5px;
 }
 
 /* Focus ohne Border */
+.controls select:focus,
 .controls input:focus {
   outline: none;
   border: none;
@@ -59,7 +67,7 @@ html, body {
 .controls.light select {
   background-color: #ffffff;
   color: #333;
-  border: 1px solid #ccc;
+  border: none;
 }
 
 .no-result {
@@ -72,23 +80,6 @@ html, body {
   z-index: 1000;
 }
 
-/* === Dark/Light Mode Button === */
-.mode-toggle {
-  position: absolute;
-  bottom: 20px;
-  left: 50px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  font-size: 14px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.mode-toggle:hover {
-  background-color: #0056b3;
-}
 
 /* === Popup Inhalt kompakt === */
 .leaflet-popup-content-wrapper {
@@ -147,45 +138,35 @@ html, body {
   display: none;
 }
 
-/* === Reset Button === */
-.reset-button {
+/* === Current Location Popup === */
+span.current-location-popup{
+  color: #b90101;  /* Helles Rot */
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.btns{
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  left: 2%;
   bottom: 20px;
-  left: 200px;
-  padding: 10px 10px;
+}
+
+.btn{
+  bottom: 20px;
+  padding: 10px 20px;
   background-color: #007bff;
   color: #fff;
   border: none;
   font-size: 14px;
   border-radius: 5px;
   cursor: pointer;
+  
 }
 
-.reset-button:hover {
+.btn:hover{
   background-color: #0056b3;
-}
-
-/* === Locate Button === */
-.locate-button {
-  position: absolute;
-  bottom: 20px;
-  left: 350px;
-  padding: 10px 10px;
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  font-size: 14px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.locate-button:hover {
-  background-color: #1e7e34;
-}
-
-/* === Current Location Popup === */
-.current-location-popup {
-  color: #ff4d4d;  /* Helles Rot */
-  font-weight: bold;
-  font-size: 14px;
 }
