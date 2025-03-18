@@ -18,10 +18,50 @@ html, body {
   background-color: #333333;
 }
 
+/* === Wrapper für responsive Skalierung === */
+.map-wrapper {
+  transform-origin: top left;
+}
+
+/* Tablet (Skaliert die komplette Ansicht) */
+@media (max-width: 1024px) {
+  .map-wrapper {
+    transform: scale(1);
+  }
+
+  .controls {
+    left: 3%;
+    top: 15px;
+  }
+
+  .btns {
+    left: 3%;
+    bottom: 15px;
+  }
+}
+
+/* Smartphone (Skaliert die komplette Ansicht) */
+@media (max-width: 768px) {
+  .map-wrapper {
+    transform: scale(1);
+  }
+
+  .controls {
+    left: 2%;
+    top: 10px;
+  }
+
+  .btns {
+    left: 2%;
+    bottom: 10px;
+  }
+}
+
 /* === Controls === */
-select{
+select {
   appearance: none;
 }
+
 .controls {
   position: absolute;
   display: flex;
@@ -29,15 +69,18 @@ select{
   justify-content: center;
   gap: 20px;
   left: 2%;
-  top: 20px
- 
+  top: 20px;
+  z-index: 100;
 }
-.controls select{
+
+.controls select {
   width: 50%;
 }
-.controls input{
+
+.controls input {
   width: 46%;
 }
+
 .controls input,
 .controls select {
   padding: 10px;
@@ -80,11 +123,24 @@ select{
   z-index: 1000;
 }
 
-
 /* === Popup Inhalt kompakt === */
 .leaflet-popup-content-wrapper {
   padding: 5px;
   max-width: 200px;
+  font-size: 14px;
+}
+
+/* Popup responsiv */
+@media (max-width: 1024px) {
+  .leaflet-popup-content-wrapper {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .leaflet-popup-content-wrapper {
+    font-size: 10px;
+  }
 }
 
 .popup-content {
@@ -139,13 +195,14 @@ select{
 }
 
 /* === Current Location Popup === */
-span.current-location-popup{
-  color: #b90101;  /* Helles Rot */
+span.current-location-popup {
+  color: #b90101;
   font-weight: bold;
   font-size: 14px;
 }
 
-.btns{
+/* === Button Container === */
+.btns {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -153,10 +210,11 @@ span.current-location-popup{
   gap: 20px;
   left: 2%;
   bottom: 20px;
+  z-index: 100;
 }
 
-.btn{
-  bottom: 20px;
+/* === Buttons === */
+.btn {
   padding: 10px 20px;
   background-color: #007bff;
   color: #fff;
@@ -164,9 +222,8 @@ span.current-location-popup{
   font-size: 14px;
   border-radius: 5px;
   cursor: pointer;
-  
 }
 
-.btn:hover{
+.btn:hover {
   background-color: #0056b3;
 }

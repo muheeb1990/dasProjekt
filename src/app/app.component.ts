@@ -51,6 +51,7 @@ export class AppComponent implements OnInit {
 
   private initMap(): void {
     this.map = L.map('map', {
+      
       zoomControl: false,
       minZoom: 3,
       maxZoom: 13,
@@ -146,7 +147,7 @@ export class AppComponent implements OnInit {
   
           marker.bindTooltip(automat.name, {
             permanent: false,
-            direction: 'top',
+            direction: 'auto',
             opacity: 0.9
           });
   
@@ -186,7 +187,14 @@ export class AppComponent implements OnInit {
               ${automat.email ? `<p>✉️ <a href="mailto:${automat.email}">${automat.email}</a></p>` : ''}
             </div>`;
   
-          marker.bindPopup(popupContent, { maxWidth: 200 });
+            marker.bindPopup(popupContent, {
+              maxWidth: 250,
+            
+              closeButton: true,
+              autoPan: true,
+              autoPanPadding: [30, 30]
+            });
+                      
   
           (marker as any).automatData = automat;
   
