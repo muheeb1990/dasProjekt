@@ -1,1 +1,43 @@
-<p>map works!</p>
+
+<div class="map-wrapper">
+    <div id="map"></div>
+  
+    <div class="controls" [ngClass]="darkMode ? 'dark' : 'light'">
+      <input
+        type="text"
+        placeholder="Stadt oder PLZ"
+        (input)="searchCityZip(stateInput.value)"
+        #stateInput
+        id="stateInput"
+      />
+  
+      <select
+        (change)="searchAutomat(automatSelect.value)"
+        #automatSelect
+        id="automatSelect"
+        aria-label="Automat auswählen"
+      >
+        <option value="">Alle Automaten anzeigen</option>
+        <option *ngFor="let automat of automatNames" [value]="automat.name">
+          {{ automat.city }} - {{ automat.name }} (PLZ: {{ automat.zipcode }}, Maschinen: {{ automat.machines }})
+        </option>
+      </select>
+    </div>
+  
+    <p *ngIf="noAutomatFound" class="no-result">
+      Keine Automaten gefunden!
+    </p>
+  
+    <div class="btns">
+      <button (click)="toggleMode()" class="mode-toggle btn">
+        {{ darkMode ? 'Light Mode' : 'Dark Mode' }}
+      </button>
+      <button (click)="resetMap()" class="reset-button btn">
+        Zurücksetzen
+      </button>
+      <button (click)="locateMe()" class="locate-button btn">
+        📍 Wo bin ich?
+      </button>
+    </div>
+  </div>
+  
