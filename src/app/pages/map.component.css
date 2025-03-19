@@ -1,0 +1,177 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+    height: 100vh;
+    width: 100%;
+  }
+  
+  /* === Hintergrund für Dark/Light Mode === */
+  #map.light {
+    background-color: #f0f0f0;
+  }
+  
+  #map.dark {
+    background-color: #333333;
+  }
+  
+  /* === Controls === */
+  select{
+    appearance: none;
+  }
+  .controls {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    left: 2%;
+    top: 20px
+   
+  }
+  .controls select{
+    width: 50%;
+  }
+  .controls input{
+    width: 46%;
+  }
+  .controls input,
+  .controls select {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  /* Focus ohne Border */
+  .controls select:focus,
+  .controls input:focus {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+  
+  /* === Styles im Dark Mode === */
+  .controls.dark input,
+  .controls.dark select {
+    background-color: #535151;
+    color: #fff;
+    border: none;
+  }
+  
+  /* === Light Mode === */
+  .controls.light input,
+  .controls.light select {
+    background-color: #ffffff;
+    color: #333;
+    border: none;
+  }
+  
+  .no-result {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: red;
+    font-weight: bold;
+    z-index: 1000;
+  }
+  
+  
+  /* === Popup Inhalt kompakt === */
+  .leaflet-popup-content-wrapper {
+    padding: 5px;
+    max-width: 200px;
+  }
+  
+  .popup-content {
+    max-width: 180px;
+    padding: 5px;
+  }
+  
+  .popup-content h4 {
+    font-size: 14px;
+    color: #007bff;
+  }
+  
+  .popup-content p {
+    font-size: 12px;
+    margin: 3px 0;
+  }
+  
+  .popup-content a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .popup-content a:hover {
+    text-decoration: underline;
+  }
+  
+  .popup-content small {
+    font-size: 10px;
+    color: #999;
+    margin-top: 5px;
+    display: block;
+  }
+  
+  /* === Leaflet Z-Index Ebenen === */
+  .leaflet-container {
+    z-index: 0;
+  }
+  
+  .leaflet-popup {
+    z-index: 10000 !important;
+  }
+  
+  .leaflet-marker-icon,
+  .leaflet-pane,
+  .leaflet-tooltip {
+    z-index: 500;
+  }
+  
+  /* === Optional: Zoom-Control entfernen === */
+  .leaflet-control-zoom {
+    display: none;
+  }
+  
+  /* === Current Location Popup === */
+  span.current-location-popup{
+    color: #b90101;  /* Helles Rot */
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .btns{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    left: 2%;
+    bottom: 20px;
+  }
+  
+  .btn{
+    bottom: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    
+  }
+  
+  .btn:hover{
+    background-color: #0056b3;
+  }
+  
+  label[for="automatSelect"] {
+    position: absolute;
+    left: -9999px;
+  }
