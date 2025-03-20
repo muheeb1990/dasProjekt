@@ -3,6 +3,9 @@
 import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
+import { ControlsComponent } from './controls/controls.component';
+
+
 
 // Standard-Leaflet-Icons setzen
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -18,7 +21,7 @@ L.Icon.Default.mergeOptions({
   standalone: true,
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
-  imports: [CommonModule]
+  imports: [CommonModule, ControlsComponent]
 })
 export class MapComponent implements OnInit {
 
