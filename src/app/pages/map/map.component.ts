@@ -3,7 +3,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
-import { ControlsComponent } from './controls/controls.component';
+
 
 
 
@@ -21,7 +21,7 @@ L.Icon.Default.mergeOptions({
   standalone: true,
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
-  imports: [CommonModule, ControlsComponent]
+  imports: [CommonModule]
 })
 export class MapComponent implements OnInit {
 
