@@ -1,5 +1,4 @@
 // map.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
