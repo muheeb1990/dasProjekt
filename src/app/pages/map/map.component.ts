@@ -1,12 +1,9 @@
-// map.component.ts
 import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
+import { LoaderComponent } from '../../shared/loader.component'; // Pfad ggf. anpassen
 
-
-
-
-// Standard-Leaflet-Icons setzen
+// Leaflet-Standard-Icons setzen
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -18,9 +15,9 @@ L.Icon.Default.mergeOptions({
 @Component({
   selector: 'app-map',
   standalone: true,
+  imports: [CommonModule, LoaderComponent], // LoaderComponent eingebunden
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
-  imports: [CommonModule]
 })
 export class MapComponent implements OnInit {
 
@@ -41,6 +38,7 @@ export class MapComponent implements OnInit {
 
   noAutomatFound: boolean = false;
   darkMode: boolean = false;
+  isLoading: boolean = false; // <-- Loader steuern
 
   private locationMarkerIcon = L.icon({
     iconUrl: 'assets/icons/current-location-icon.png',
@@ -85,9 +83,16 @@ export class MapComponent implements OnInit {
       }
     });
   }
-
-  // === Daten laden ===
+  
+  resetSearchInput(inputElement: HTMLInputElement): void {
+    inputElement.value = ''; // Leert das Feld
+    this.resetMap(); // Ruft deine bestehende Reset-Logik auf
+  }
+  
+  // === GeoJSON-Layer laden ===
   private loadGeoJson(): void {
+    this.isLoading = true;
+
     fetch('assets/bundeslaender.geojson')
       .then(response => response.json())
       .then(geojsonData => {
@@ -130,10 +135,17 @@ export class MapComponent implements OnInit {
         this.map!.fitBounds(this.geoJsonLayer.getBounds(), {
           padding: [10, 10]
         });
+      })
+      .catch(error => console.error('GeoJSON-Fehler:', error))
+      .finally(() => {
+        this.isLoading = false;
       });
   }
 
+  // === Automaten laden ===
   private loadAutomaten(): void {
+    this.isLoading = true;
+
     fetch('https://muheeb.createoceans.eu/api/locations.php')
       .then(response => response.json())
       .then(automaten => {
@@ -178,21 +190,17 @@ export class MapComponent implements OnInit {
           }
 
           const popupContent = `
-            <div class="popup-content" style="max-width: 180px; font-size: 12px; line-height: 1.3;">
-              <h4 style="margin: 0 0 5px;">${automat.name}</h4>
-              ${automat.nameSub ? `<p style="color: #777;">${automat.nameSub}</p>` : ''}
-              <p> ${automat.zipcode} ${automat.city}<br>${automat.address}</p>
+            <div class="popup-content">
+              <h4>${automat.name}</h4>
+              ${automat.nameSub ? `<p>${automat.nameSub}</p>` : ''}
+              <p>${automat.zipcode} ${automat.city}<br>${automat.address}</p>
               <p>${openingHours}</p>
               ${automat.phone ? `<p>☎️ <a href="tel:${automat.phone}">${automat.phone}</a></p>` : ''}
               ${automat.email ? `<p>✉️ <a href="mailto:${automat.email}">${automat.email}</a></p>` : ''}
-            </div>`;
+            </div>
+          `;
 
-          marker.bindPopup(popupContent, {
-            maxWidth: 250,
-            closeButton: true,
-            autoPan: true,
-            autoPanPadding: [30, 30]
-          });
+          marker.bindPopup(popupContent);
 
           (marker as any).automatData = automat;
 
@@ -215,8 +223,9 @@ export class MapComponent implements OnInit {
             : cityA.localeCompare(cityB);
         });
       })
-      .catch(error => {
-        console.error('Fehler beim Laden der Automaten:', error);
+      .catch(error => console.error('Fehler beim Laden der Automaten:', error))
+      .finally(() => {
+        this.isLoading = false;
       });
   }
 
@@ -261,6 +270,8 @@ export class MapComponent implements OnInit {
   private showCurrentLocation(): void {
     if (!this.map) return;
 
+    this.isLoading = true;
+
     this.map.locate({ setView: false, watch: false });
 
     this.map.once('locationfound', (e: L.LocationEvent) => {
@@ -277,10 +288,13 @@ export class MapComponent implements OnInit {
         animate: true,
         duration: 1.5
       });
+
+      this.isLoading = false;
     });
 
     this.map.once('locationerror', (e: L.ErrorEvent) => {
       console.warn('Standortermittlung fehlgeschlagen:', e.message);
+      this.isLoading = false;
     });
   }
 

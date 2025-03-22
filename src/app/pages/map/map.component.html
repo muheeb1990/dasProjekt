@@ -1,18 +1,32 @@
+<app-loader [isLoading]="isLoading"></app-loader>
+
 
 <div class="map-wrapper">
     <div id="map">
+    
+    
       
     </div>
-  
+    
     <div class="controls" [ngClass]="darkMode ? 'dark' : 'light'">
+    <div class="input-mit-reset">
       <input
-        type="text"
-        placeholder="Stadt oder PLZ"
-        (input)="searchCityZip(stateInput.value)"
-        #stateInput
-        id="stateInput"
-      />
-  
+      type="text"
+      placeholder="Stadt oder PLZ"
+      (input)="searchCityZip(stateInput.value)"
+      #stateInput
+      id="stateInput"
+    />
+      <button
+      type="button"
+      class="reset-input-btn"
+      *ngIf="stateInput.value"
+      (click)="resetSearchInput(stateInput)"
+    >
+      ✖
+    </button>
+
+    </div>
       <select
         (change)="searchAutomat(automatSelect.value)"
         #automatSelect
@@ -25,7 +39,8 @@
         </option>
       </select>
     </div>
-  
+    <img src="assets/icons/AntonLogo.jpg" alt="Anton Logo">
+    
     <p *ngIf="noAutomatFound" class="no-result">
       Keine Automaten gefunden!
     </p>
@@ -42,7 +57,6 @@
       </button>
       
     </div>
-        
-
+    
   </div>
   

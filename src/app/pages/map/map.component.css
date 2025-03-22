@@ -153,7 +153,7 @@ span.current-location-popup{
     justify-content: center;
     gap: 20px;
     left: 2%;
-    bottom: 20px;
+    bottom: 30px;
 }
 
 .btn{
@@ -175,4 +175,37 @@ span.current-location-popup{
 label[for="automatSelect"] {
     position: absolute;
     left: -9999px;
+}
+img{
+    position: absolute;
+    width: 28%;
+    display: inline-block; 
+    opacity: 0.6;
+    right: 30px;
+    bottom: 30px;  
+    transform: rotate(-0deg);
+}
+
+
+  /* Reset Button */
+  .reset-input-btn {
+    position: absolute;
+    background-color: #696969;
+    border: none;    
+    color: #999;
+    cursor: pointer;
+    height: 100%;
+    right: 50%;
+    border-radius:  5px;
+    border: none;
+  }
+  
+.input-mit-reset{
+    position: relative;
+    display: flex;
+}
+
+  
+.reset-input-btn:hover {
+    color: #fff;
 }
