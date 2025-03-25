@@ -2,13 +2,11 @@
 
 
 <div class="map-wrapper">
-    <div id="map">
+    <div id="map"></div>
     
-    
-      
-    </div>
     <img src="assets/icons/logoOhne.png" alt="Logo" class="rotated-logo">
-    <div class="controls" [ngClass]="darkMode ? 'dark' : 'light'">
+    
+    <div class="controls" [ngClass]="darkMode ? 'dark' : 'light'"> 
     <div class="input-mit-reset">
       <input
       type="text"
@@ -25,8 +23,9 @@
     >
       ✖
     </button>
-
     </div>
+
+
       <select
         (change)="searchAutomat(automatSelect.value)"
         #automatSelect

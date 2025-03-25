@@ -12,7 +12,6 @@ html, body {
     overflow: hidden;
 }
   
-  /* Wiederholtes, gedrehtes Bild im Hintergrund */
 #map::before {
     content: "";
     position: absolute;
@@ -22,23 +21,21 @@ html, body {
     height: 200%;
     background-image: url("/assets/icons/logoOhne.png");
     background-repeat: repeat;
-    background-size: 80px auto; /* Größe der Wiederholung */
-    transform: translate(-50%, -50%) rotate(-30deg); /* Drehung */
+    background-size: 80px auto; 
+    transform: translate(-50%, -50%) rotate(-30deg); 
     opacity: 0.3;
     pointer-events: none;
     z-index: -1;
 }
   
-/* === Hintergrund für Dark/Light Mode === */
 #map.light {
-    background-color: #f0f0f0;
+    background-color: #e4e4e4;
 }
 
 #map.dark {
     background-color: #333333;
 }
 
-/* === Controls === */
 select{
     appearance: none;
 }
@@ -65,7 +62,6 @@ select{
     border-radius: 5px;
 }
 
-/* Focus ohne Border */
 .controls select:focus,
 .controls input:focus {
     outline: none;
@@ -74,7 +70,6 @@ select{
     
 }
 
-/* === Styles im Dark Mode === */
 .controls.dark input,
 .controls.dark select {
     background-color: #535151;
@@ -82,10 +77,9 @@ select{
     border: none;
 }
 
-/* === Light Mode === */
 .controls.light input,
 .controls.light select {
-    background-color: #ffffff;
+    background-color: #f0f0f0;
     color: #333;
     border: none;
 }
@@ -100,8 +94,6 @@ select{
     z-index: 1000;
 }
 
-
-/* === Popup Inhalt kompakt === */
 .leaflet-popup-content-wrapper {
     padding: 5px;
     max-width: 200px;
@@ -138,7 +130,7 @@ select{
     display: block;
 }
 
-/* === Leaflet Z-Index Ebenen === */
+
 .leaflet-container {
     z-index: 0;
 }
@@ -153,14 +145,14 @@ select{
     z-index: 500;
 }
 
-/* === Optional: Zoom-Control entfernen === */
+
 .leaflet-control-zoom {
     display: none;
 }
 
-/* === Current Location Popup === */
+
 span.current-location-popup{
-    color: #b90101;  /* Helles Rot */
+    color: #b90101; 
     font-weight: bold;
     font-size: 14px;
 }
@@ -199,16 +191,14 @@ label[for="automatSelect"] {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 150px;              /* Oder was du brauchst */
+    width: 150px;              
     transform: rotate(0deg);
     opacity: 0.7;
     z-index: 9999;
-    pointer-events: none;     /* Wichtig: damit man nicht aus Versehen draufklickt */
+    pointer-events: none;     
 }
   
-
-  /* Reset Button */
-  .reset-input-btn {
+.reset-input-btn {
     position: absolute;
     background-color: #696969;
     border: none;    
@@ -218,14 +208,13 @@ label[for="automatSelect"] {
     right: 50%;
     border-radius:  5px;
     border: none;
-  }
+}
   
 .input-mit-reset{
     position: relative;
     display: flex;
 }
 
-  
 .reset-input-btn:hover {
     color: #fff;
 }
