@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
-import { LoaderComponent } from '../../shared/loader.component'; // Pfad ggf. anpassen
+import { LoaderComponent } from '../../shared/loader.component'; 
 
 // Leaflet-Standard-Icons setzen
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -15,13 +15,12 @@ L.Icon.Default.mergeOptions({
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CommonModule, LoaderComponent], // LoaderComponent eingebunden
+  imports: [CommonModule, LoaderComponent], 
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit {
 
-  // === Eigenschaften ===
   map: L.Map | null = null;
   geoJsonLayer: L.GeoJSON<any> | null = null;
   streetsLayer: L.TileLayer | null = null;
@@ -38,7 +37,7 @@ export class MapComponent implements OnInit {
 
   noAutomatFound: boolean = false;
   darkMode: boolean = false;
-  isLoading: boolean = false; // <-- Loader steuern
+  isLoading: boolean = false; 
 
   private locationMarkerIcon = L.icon({
     iconUrl: 'assets/icons/current-location-icon.png',
